@@ -1,40 +1,72 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="differential_drive_robot">
 
-  <!-- ═══════════════ XACRO PROPERTIES ═══════════════ -->
-  <xacro:property name="chassis_length"    value="0.20"/>
-  <xacro:property name="chassis_width"     value="0.15"/>
-  <xacro:property name="chassis_height"    value="0.03"/>
+  <!-- ════════════════════════════════════════════════════════
+       XACRO PROPERTIES
+       ════════════════════════════════════════════════════════ -->
 
-  <xacro:property name="wheel_radius"      value="0.0325"/>
-  <xacro:property name="wheel_width"       value="0.025"/>
-  <xacro:property name="wheel_separation"  value="0.176"/>
+  <!-- Chassis dimensions -->
+  <xacro:property name="chassis_length"   value="0.20"/>
+  <xacro:property name="chassis_width"    value="0.15"/>
+  <xacro:property name="chassis_height"   value="0.03"/>
 
-  <xacro:property name="caster_radius"     value="0.012"/>
-  <xacro:property name="chassis_z"         value="${wheel_radius}"/>
+  <!-- Wheel dimensions -->
+  <xacro:property name="wheel_radius"     value="0.0325"/>
+  <xacro:property name="wheel_width"      value="0.025"/>
+  <xacro:property name="wheel_separation" value="0.176"/>
 
-  <xacro:property name="bat_l"    value="0.055"/>
-  <xacro:property name="bat_w"    value="0.030"/>
-  <xacro:property name="bat_h"    value="0.012"/>
-  <xacro:property name="bat_gap"  value="0.005"/>
-  <xacro:property name="bat_pitch" value="${bat_w + bat_gap}"/>
+  <!-- Caster ball radius & chassis height offset -->
+  <xacro:property name="caster_radius"    value="0.00625"/>
+  <xacro:property name="chassis_z"        value="${wheel_radius}"/>
+
+  <!-- Battery pack dimensions & layout -->
+  <xacro:property name="bat_l"        value="0.055"/>
+  <xacro:property name="bat_w"        value="0.030"/>
+  <xacro:property name="bat_h"        value="0.012"/>
+  <xacro:property name="bat_gap"      value="0.005"/>
+  <xacro:property name="bat_pitch"    value="${bat_w + bat_gap}"/>
   <xacro:property name="bat_center_x" value="-0.055"/>
 
-  <!-- ═══════════════ BASE LINK ═══════════════ -->
+  <!-- Ball-caster housing geometry -->
+  <xacro:property name="cup_outer_r" value="0.009"/>   <!-- outer radius of cup cylinder -->
+  <xacro:property name="cup_wall_t"  value="0.0015"/>  <!-- wall thickness -->
+  <xacro:property name="cup_h"       value="0.010"/>   <!-- cup body height -->
+  <xacro:property name="cup_top_h"   value="0.003"/>   <!-- top plate height -->
+
+  <!-- Caster fork ears -->
+  <xacro:property name="ear_w"    value="0.006"/>   <!-- ear width (x) -->
+  <xacro:property name="ear_h"    value="0.008"/>   <!-- ear height (z) -->
+  <xacro:property name="ear_t"    value="0.006"/>   <!-- ear thickness (y) -->
+  <xacro:property name="ear_span" value="0.011"/>   <!-- half-span between ears -->
+
+  <!-- Caster pivot bolt -->
+  <xacro:property name="pbolt_r" value="0.0025"/>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       BASE LINK
+       ════════════════════════════════════════════════════════ -->
+
   <link name="base_link">
     <inertial>
       <mass value="0.001"/>
-      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0"
+                               iyy="0.000001" iyz="0"
+                                              izz="0.000001"/>
     </inertial>
   </link>
 
   <joint name="chassis_joint" type="fixed">
     <parent link="base_link"/>
-    <child link="chassis"/>
+    <child  link="chassis"/>
     <origin xyz="0 0 ${chassis_z}" rpy="0 0 0"/>
   </joint>
 
-  <!-- ═══════════════ CHASSIS ═══════════════ -->
+
+  <!-- ════════════════════════════════════════════════════════
+       CHASSIS
+       ════════════════════════════════════════════════════════ -->
+
   <link name="chassis">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -53,11 +85,17 @@
     </collision>
     <inertial>
       <mass value="0.35"/>
-      <inertia ixx="0.000679" ixy="0" ixz="0" iyy="0.001180" iyz="0" izz="0.001639"/>
+      <inertia ixx="0.000679" ixy="0" ixz="0"
+                               iyy="0.001180" iyz="0"
+                                              izz="0.001639"/>
     </inertial>
   </link>
 
-  <!-- ═══════════════ LEFT WHEEL ═══════════════ -->
+
+  <!-- ════════════════════════════════════════════════════════
+       LEFT WHEEL
+       ════════════════════════════════════════════════════════ -->
+
   <link name="left_wheel">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -76,17 +114,21 @@
     </collision>
     <inertial>
       <mass value="0.06"/>
-      <inertia ixx="0.0000237" ixy="0" ixz="0" iyy="0.0000237" iyz="0" izz="0.0000317"/>
+      <inertia ixx="0.0000237" ixy="0" ixz="0"
+                                iyy="0.0000237" iyz="0"
+                                               izz="0.0000317"/>
     </inertial>
   </link>
 
   <joint name="left_wheel_joint" type="continuous">
     <parent link="chassis"/>
-    <child link="left_wheel"/>
-    <origin xyz="${-(chassis_length/2 - 0.03)} ${wheel_separation/2} 0" rpy="${-pi/2} 0 0"/>
+    <child  link="left_wheel"/>
+    <origin xyz="${-(chassis_length/2 - 0.03)} ${wheel_separation/2} 0"
+            rpy="${-pi/2} 0 0"/>
     <axis xyz="0 0 1"/>
   </joint>
 
+  <!-- Left wheel hub (decorative) -->
   <link name="left_wheel_hub">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -99,17 +141,23 @@
     </visual>
     <inertial>
       <mass value="0.005"/>
-      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0"
+                               iyy="0.000001" iyz="0"
+                                              izz="0.000001"/>
     </inertial>
   </link>
 
   <joint name="left_wheel_hub_joint" type="fixed">
     <parent link="left_wheel"/>
-    <child link="left_wheel_hub"/>
+    <child  link="left_wheel_hub"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
 
-  <!-- ═══════════════ RIGHT WHEEL ═══════════════ -->
+
+  <!-- ════════════════════════════════════════════════════════
+       RIGHT WHEEL
+       ════════════════════════════════════════════════════════ -->
+
   <link name="right_wheel">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -128,17 +176,21 @@
     </collision>
     <inertial>
       <mass value="0.06"/>
-      <inertia ixx="0.0000237" ixy="0" ixz="0" iyy="0.0000237" iyz="0" izz="0.0000317"/>
+      <inertia ixx="0.0000237" ixy="0" ixz="0"
+                                iyy="0.0000237" iyz="0"
+                                               izz="0.0000317"/>
     </inertial>
   </link>
 
   <joint name="right_wheel_joint" type="continuous">
     <parent link="chassis"/>
-    <child link="right_wheel"/>
-    <origin xyz="${-(chassis_length/2 - 0.03)} ${-wheel_separation/2} 0" rpy="${-pi/2} 0 0"/>
+    <child  link="right_wheel"/>
+    <origin xyz="${-(chassis_length/2 - 0.03)} ${-wheel_separation/2} 0"
+            rpy="${-pi/2} 0 0"/>
     <axis xyz="0 0 1"/>
   </joint>
 
+  <!-- Right wheel hub (decorative) -->
   <link name="right_wheel_hub">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -151,232 +203,656 @@
     </visual>
     <inertial>
       <mass value="0.005"/>
-      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0"
+                               iyy="0.000001" iyz="0"
+                                              izz="0.000001"/>
     </inertial>
   </link>
 
   <joint name="right_wheel_hub_joint" type="fixed">
     <parent link="right_wheel"/>
-    <child link="right_wheel_hub"/>
+    <child  link="right_wheel_hub"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
 
-  <!-- ═══════════════ CASTER FRONT ═══════════════ -->
+
+  <!-- ════════════════════════════════════════════════════════
+       BALL CASTER — additional local properties
+       ════════════════════════════════════════════════════════ -->
+
+  <xacro:property name="cup_outer_r" value="0.0090"/>   <!-- overrides global -->
+  <xacro:property name="cup_inner_r" value="0.0075"/>
+  <xacro:property name="cup_h"       value="0.0050"/>   <!-- overrides global -->
+  <xacro:property name="cup_top_h"   value="0.0020"/>   <!-- overrides global -->
+  <xacro:property name="cup_embed"   value="0.0020"/>
+  <xacro:property name="caster_top_z"
+    value="${-(caster_radius - wheel_radius) - (cup_top_h/2 + cup_h + caster_radius - cup_embed)}"/>
+
+  <xacro:property name="ear_w"      value="0.0050"/>    <!-- overrides global -->
+  <xacro:property name="ear_span_y" value="0.0110"/>
+  <xacro:property name="ear_h"      value="0.0060"/>    <!-- overrides global -->
+  <xacro:property name="ear_t"      value="0.0040"/>    <!-- overrides global -->
+  <xacro:property name="pbolt_r"    value="0.0022"/>    <!-- overrides global -->
+
+  <!-- ── Caster: top mounting plate ── -->
+  <link name="caster_housing_top">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.016 0.022 ${cup_top_h}"/>
+      </geometry>
+      <material name="caster_housing_white">
+        <color rgba="0.92 0.90 0.85 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.016 0.022 ${cup_top_h}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.003"/>
+      <inertia ixx="0.0000015" ixy="0" ixz="0"
+                                iyy="0.0000024" iyz="0"
+                                               izz="0.0000038"/>
+    </inertial>
+  </link>
+
+  <joint name="caster_housing_top_joint" type="fixed">
+    <parent link="chassis"/>
+    <child  link="caster_housing_top"/>
+    <origin xyz="${chassis_length/2 - 0.020} 0 ${-(chassis_height/2 + cup_top_h/2)}"
+            rpy="0 0 0"/>
+  </joint>
+
+  <!-- ── Caster: cylindrical cup body ── -->
+  <link name="caster_cup_body">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="${cup_outer_r}" length="${cup_h}"/>
+      </geometry>
+      <material name="caster_cup_white">
+        <color rgba="0.90 0.88 0.83 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="${cup_outer_r}" length="${cup_h}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.005"/>
+      <inertia ixx="0.0000030" ixy="0" ixz="0"
+                                iyy="0.0000030" iyz="0"
+                                               izz="0.0000036"/>
+    </inertial>
+  </link>
+
+  <joint name="caster_cup_body_joint" type="fixed">
+    <parent link="caster_housing_top"/>
+    <child  link="caster_cup_body"/>
+    <origin xyz="0 0 ${-(cup_top_h/2 + cup_h/2)}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ── Caster: fork ears (left & right) ── -->
+  <link name="caster_ear_left">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${ear_w} ${ear_t} ${ear_h}"/>
+      </geometry>
+      <material name="caster_ear_white_l">
+        <color rgba="0.90 0.88 0.83 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.002"/>
+      <inertia ixx="0.0000010" ixy="0" ixz="0"
+                                iyy="0.0000008" iyz="0"
+                                               izz="0.0000005"/>
+    </inertial>
+  </link>
+
+  <joint name="caster_ear_left_joint" type="fixed">
+    <parent link="caster_cup_body"/>
+    <child  link="caster_ear_left"/>
+    <origin xyz="0 ${cup_outer_r + ear_t/2} ${cup_h/2 - ear_h/2}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="caster_ear_right">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${ear_w} ${ear_t} ${ear_h}"/>
+      </geometry>
+      <material name="caster_ear_white_r">
+        <color rgba="0.90 0.88 0.83 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.002"/>
+      <inertia ixx="0.0000010" ixy="0" ixz="0"
+                                iyy="0.0000008" iyz="0"
+                                               izz="0.0000005"/>
+    </inertial>
+  </link>
+
+  <joint name="caster_ear_right_joint" type="fixed">
+    <parent link="caster_cup_body"/>
+    <child  link="caster_ear_right"/>
+    <origin xyz="0 ${-(cup_outer_r + ear_t/2)} ${cup_h/2 - ear_h/2}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ── Caster: pivot bolts ── -->
+  <link name="caster_pivot_bolt_left">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="${pbolt_r}"/>
+      </geometry>
+      <material name="pivot_bolt_dark_l">
+        <color rgba="0.12 0.12 0.12 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.0000001" ixy="0" ixz="0"
+                                iyy="0.0000001" iyz="0"
+                                               izz="0.0000001"/>
+    </inertial>
+  </link>
+
+  <joint name="caster_pivot_bolt_left_joint" type="fixed">
+    <parent link="caster_ear_left"/>
+    <child  link="caster_pivot_bolt_left"/>
+    <origin xyz="0 ${ear_t/2 + pbolt_r * 0.3} 0" rpy="0 0 0"/>
+  </joint>
+
+  <link name="caster_pivot_bolt_right">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="${pbolt_r}"/>
+      </geometry>
+      <material name="pivot_bolt_dark_r">
+        <color rgba="0.12 0.12 0.12 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.0000001" ixy="0" ixz="0"
+                                iyy="0.0000001" iyz="0"
+                                               izz="0.0000001"/>
+    </inertial>
+  </link>
+
+  <joint name="caster_pivot_bolt_right_joint" type="fixed">
+    <parent link="caster_ear_right"/>
+    <child  link="caster_pivot_bolt_right"/>
+    <origin xyz="0 ${-(ear_t/2 + pbolt_r * 0.3)} 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ── Caster: rolling ball ── -->
   <link name="caster_front">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <sphere radius="${caster_radius}"/>
       </geometry>
-      <material name="caster_silver">
-        <color rgba="0.72 0.72 0.74 1"/>
+      <material name="caster_ball_dark">
+        <color rgba="0.15 0.15 0.16 1"/>
       </material>
     </visual>
     <collision>
-      <geometry><sphere radius="${caster_radius}"/></geometry>
+      <geometry>
+        <sphere radius="${caster_radius}"/>
+      </geometry>
     </collision>
     <inertial>
-      <mass value="0.01"/>
-      <inertia ixx="0.00000058" ixy="0" ixz="0" iyy="0.00000058" iyz="0" izz="0.00000058"/>
+      <mass value="0.010"/>
+      <inertia ixx="0.00000058" ixy="0" ixz="0"
+                                 iyy="0.00000058" iyz="0"
+                                                  izz="0.00000058"/>
     </inertial>
   </link>
 
   <joint name="caster_front_joint" type="fixed">
-    <parent link="chassis"/>
-    <child link="caster_front"/>
-    <origin xyz="${chassis_length/2 - 0.02} 0 ${caster_radius - wheel_radius}" rpy="0 0 0"/>
+    <parent link="caster_housing_top"/>
+    <child  link="caster_front"/>
+    <origin xyz="0 0 -0.0103" rpy="0 0 0"/>
   </joint>
 
-  <!-- ═══════════════ BATTERY UNIT ═══════════════ -->
+  <!-- ── Caster: specular highlight (decorative) ── -->
+  <link name="caster_ball_shine">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="${caster_radius * 0.25}"/>
+      </geometry>
+      <material name="caster_ball_spec">
+        <color rgba="0.60 0.60 0.62 0.55"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0000001" ixy="0" ixz="0"
+                                iyy="0.0000001" iyz="0"
+                                               izz="0.0000001"/>
+    </inertial>
+  </link>
+
+  <joint name="caster_ball_shine_joint" type="fixed">
+    <parent link="caster_front"/>
+    <child  link="caster_ball_shine"/>
+    <origin xyz="${-caster_radius * 0.3} 0 ${caster_radius * 0.65}" rpy="0 0 0"/>
+  </joint>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       BATTERY UNIT — xacro macro
+       Params : side      → name suffix (e.g. "single")
+                x_offset  → x position on chassis
+       ════════════════════════════════════════════════════════ -->
+
   <xacro:macro name="battery_unit" params="side x_offset">
+
+    <!-- Main cell body -->
     <link name="battery_${side}">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
           <box size="${bat_l} ${bat_w} ${bat_h}"/>
         </geometry>
-        <material name="lipo_black_${side}"><color rgba="0.07 0.07 0.07 1"/></material>
+        <material name="lipo_body_${side}">
+          <color rgba="0.06 0.06 0.06 1"/>
+        </material>
       </visual>
       <collision>
-        <geometry><box size="${bat_l} ${bat_w} ${bat_h}"/></geometry>
+        <geometry>
+          <box size="${bat_l} ${bat_w} ${bat_h}"/>
+        </geometry>
       </collision>
       <inertial>
         <mass value="0.045"/>
-        <inertia ixx="0.0000100" ixy="0" ixz="0" iyy="0.0000116" iyz="0" izz="0.0000194"/>
+        <inertia ixx="0.0000100" ixy="0" ixz="0"
+                                  iyy="0.0000116" iyz="0"
+                                                 izz="0.0000194"/>
       </inertial>
     </link>
 
     <joint name="battery_${side}_joint" type="fixed">
       <parent link="chassis"/>
-      <child link="battery_${side}"/>
-      <origin xyz="${x_offset} 0 ${chassis_height/2 + bat_h/2}" rpy="0 0 ${pi/2}"/>
+      <child  link="battery_${side}"/>
+      <origin xyz="${x_offset} 0 ${chassis_height/2 + bat_h/2}"
+              rpy="0 0 ${pi/2}"/>
     </joint>
 
+    <!-- Top label sticker -->
     <link name="battery_${side}_label">
       <visual>
-        <geometry><box size="${bat_l - 0.010} ${bat_w - 0.006} 0.001"/></geometry>
-        <material name="lipo_yellow_${side}"><color rgba="0.95 0.80 0.05 1"/></material>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="${bat_l - 0.004} ${bat_w - 0.004} 0.0005"/>
+        </geometry>
+        <material name="lipo_sticker_${side}">
+          <color rgba="0.96 0.80 0.02 1"/>
+        </material>
       </visual>
       <inertial>
         <mass value="0.001"/>
-        <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+        <inertia ixx="0.000001" ixy="0" ixz="0"
+                                 iyy="0.000001" iyz="0"
+                                                izz="0.000001"/>
       </inertial>
     </link>
 
     <joint name="battery_${side}_label_joint" type="fixed">
       <parent link="battery_${side}"/>
-      <child link="battery_${side}_label"/>
-      <origin xyz="0 0 ${bat_h/2 + 0.001}" rpy="0 0 0"/>
+      <child  link="battery_${side}_label"/>
+      <origin xyz="0 0 ${bat_h/2 + 0.0005}" rpy="0 0 0"/>
     </joint>
 
-    <link name="battery_${side}_connector">
+    <!-- Cell divider line (decorative) -->
+    <link name="battery_${side}_cell_div">
       <visual>
-        <geometry><box size="0.008 0.012 0.008"/></geometry>
-        <material name="xt30_orange_${side}"><color rgba="1.0 0.45 0.0 1"/></material>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.001"/>
+        </geometry>
+        <material name="cell_div_${side}">
+          <color rgba="0.15 0.15 0.15 1"/>
+        </material>
+      </visual>
+      <inertial>
+        <mass value="0.0001"/>
+        <inertia ixx="0.0000001" ixy="0" ixz="0"
+                                  iyy="0.0000001" iyz="0"
+                                                 izz="0.0000001"/>
+      </inertial>
+    </link>
+
+    <joint name="battery_${side}_cell_div_joint" type="fixed">
+      <parent link="battery_${side}"/>
+      <child  link="battery_${side}_cell_div"/>
+      <origin xyz="0 0 ${bat_h/2}" rpy="0 0 0"/>
+    </joint>
+
+    <!-- XT30 positive terminal (red) -->
+    <link name="battery_${side}_terminal_pos">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.009 0.011 0.009"/>
+        </geometry>
+        <material name="xt30_pos_${side}">
+          <color rgba="0.76 0.12 0.12 1"/>
+        </material>
       </visual>
       <inertial>
         <mass value="0.002"/>
-        <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+        <inertia ixx="0.000001" ixy="0" ixz="0"
+                                 iyy="0.000001" iyz="0"
+                                                izz="0.000001"/>
       </inertial>
     </link>
 
-    <joint name="battery_${side}_connector_joint" type="fixed">
+    <joint name="battery_${side}_terminal_pos_joint" type="fixed">
       <parent link="battery_${side}"/>
-      <child link="battery_${side}_connector"/>
-      <origin xyz="${bat_l/2 + 0.005} 0 0" rpy="0 0 0"/>
+      <child  link="battery_${side}_terminal_pos"/>
+      <origin xyz="${bat_l/2 + 0.005} 0.005 0.001" rpy="0 0 0"/>
     </joint>
 
-    <link name="battery_${side}_lead">
+    <!-- XT30 negative terminal (black) -->
+    <link name="battery_${side}_terminal_neg">
       <visual>
-        <geometry><box size="0.005 0.008 0.005"/></geometry>
-        <material name="jst_white_${side}"><color rgba="0.90 0.90 0.90 1"/></material>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.009 0.011 0.009"/>
+        </geometry>
+        <material name="xt30_neg_${side}">
+          <color rgba="0.10 0.10 0.10 1"/>
+        </material>
+      </visual>
+      <inertial>
+        <mass value="0.002"/>
+        <inertia ixx="0.000001" ixy="0" ixz="0"
+                                 iyy="0.000001" iyz="0"
+                                                izz="0.000001"/>
+      </inertial>
+    </link>
+
+    <joint name="battery_${side}_terminal_neg_joint" type="fixed">
+      <parent link="battery_${side}"/>
+      <child  link="battery_${side}_terminal_neg"/>
+      <origin xyz="${bat_l/2 + 0.005} -0.005 0.001" rpy="0 0 0"/>
+    </joint>
+
+    <!-- JST balance lead connector -->
+    <link name="battery_${side}_balance">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.005 0.018 0.008"/>
+        </geometry>
+        <material name="jst_balance_${side}">
+          <color rgba="0.88 0.88 0.88 1"/>
+        </material>
       </visual>
       <inertial>
         <mass value="0.001"/>
-        <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+        <inertia ixx="0.000001" ixy="0" ixz="0"
+                                 iyy="0.000001" iyz="0"
+                                                izz="0.000001"/>
       </inertial>
     </link>
 
-    <joint name="battery_${side}_lead_joint" type="fixed">
+    <joint name="battery_${side}_balance_joint" type="fixed">
       <parent link="battery_${side}"/>
-      <child link="battery_${side}_lead"/>
-      <origin xyz="${-(bat_l/2 + 0.004)} 0 0.002" rpy="0 0 0"/>
+      <child  link="battery_${side}_balance"/>
+      <origin xyz="${-(bat_l/2 + 0.003)} 0 0.001" rpy="0 0 0"/>
     </joint>
+
   </xacro:macro>
 
-  <xacro:battery_unit side="single"  x_offset="${bat_center_x - bat_pitch/2}"/>
+  <!-- Instantiate single battery pack -->
+  <xacro:battery_unit side="single" x_offset="${bat_center_x - bat_pitch/2}"/>
 
-  <!-- ═══════════════ IMU LINK ═══════════════ -->
+
+  <!-- ════════════════════════════════════════════════════════
+       IMU MODULE (MPU-series breakout board)
+       ════════════════════════════════════════════════════════ -->
+
+  <!-- PCB substrate -->
   <link name="imu_link">
     <visual>
-      <geometry><box size="0.020 0.020 0.002"/></geometry>
-      <material name="imu_pcb_green"><color rgba="0.04 0.32 0.04 1"/></material>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.020 0.020 0.0016"/>
+      </geometry>
+      <material name="imu_pcb_green">
+        <color rgba="0.04 0.28 0.04 1"/>
+      </material>
     </visual>
     <collision>
-      <geometry><box size="0.020 0.020 0.002"/></geometry>
+      <geometry>
+        <box size="0.020 0.020 0.002"/>
+      </geometry>
     </collision>
     <inertial>
       <mass value="0.004"/>
-      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0"
+                               iyy="0.000001" iyz="0"
+                                              izz="0.000001"/>
     </inertial>
   </link>
 
   <joint name="imu_joint" type="fixed">
     <parent link="chassis"/>
-    <child link="imu_link"/>
-    <origin xyz="0 0 ${chassis_height/2 + 0.001}" rpy="0 0 0"/>
+    <child  link="imu_link"/>
+    <origin xyz="0 0 ${chassis_height/2 + 0.0008}" rpy="0 0 0"/>
   </joint>
 
-  <link name="imu_chip">
+  <!-- IMU IC (MPU chip) -->
+  <link name="imu_mpu_chip">
     <visual>
-      <geometry><box size="0.006 0.006 0.002"/></geometry>
-      <material name="chip_dark"><color rgba="0.12 0.12 0.12 1"/></material>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.004 0.004 0.001"/>
+      </geometry>
+      <material name="imu_ic_dark">
+        <color rgba="0.10 0.10 0.10 1"/>
+      </material>
     </visual>
     <inertial>
       <mass value="0.001"/>
-      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0"
+                               iyy="0.000001" iyz="0"
+                                              izz="0.000001"/>
     </inertial>
   </link>
 
-  <joint name="imu_chip_joint" type="fixed">
+  <joint name="imu_mpu_chip_joint" type="fixed">
     <parent link="imu_link"/>
-    <child link="imu_chip"/>
-    <origin xyz="0.001 0 0.002" rpy="0 0 0"/>
+    <child  link="imu_mpu_chip"/>
+    <origin xyz="-0.002 0 ${0.0008 + 0.0005}" rpy="0 0 0"/>
   </joint>
 
-  <link name="imu_header">
+  <!-- Decoupling capacitor 1 -->
+  <link name="imu_cap_1">
     <visual>
-      <geometry><box size="0.002 0.012 0.004"/></geometry>
-      <material name="header_black"><color rgba="0.10 0.10 0.10 1"/></material>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.0007" length="0.0015"/>
+      </geometry>
+      <material name="cap_body_gray">
+        <color rgba="0.40 0.40 0.42 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0000001" ixy="0" ixz="0"
+                                iyy="0.0000001" iyz="0"
+                                               izz="0.0000001"/>
+    </inertial>
+  </link>
+
+  <joint name="imu_cap_1_joint" type="fixed">
+    <parent link="imu_link"/>
+    <child  link="imu_cap_1"/>
+    <origin xyz="0.004 0.005 ${0.0008 + 0.00075}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Decoupling capacitor 2 -->
+  <link name="imu_cap_2">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.0007" length="0.0015"/>
+      </geometry>
+      <material name="cap_body_gray2">
+        <color rgba="0.40 0.40 0.42 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0000001" ixy="0" ixz="0"
+                                iyy="0.0000001" iyz="0"
+                                               izz="0.0000001"/>
+    </inertial>
+  </link>
+
+  <joint name="imu_cap_2_joint" type="fixed">
+    <parent link="imu_link"/>
+    <child  link="imu_cap_2"/>
+    <origin xyz="0.004 -0.003 ${0.0008 + 0.00075}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Voltage regulator -->
+  <link name="imu_vreg">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.003 0.002 0.001"/>
+      </geometry>
+      <material name="vreg_ic">
+        <color rgba="0.15 0.15 0.15 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="0.0000001" ixy="0" ixz="0"
+                                iyy="0.0000001" iyz="0"
+                                               izz="0.0000001"/>
+    </inertial>
+  </link>
+
+  <joint name="imu_vreg_joint" type="fixed">
+    <parent link="imu_link"/>
+    <child  link="imu_vreg"/>
+    <origin xyz="0.006 0.006 ${0.0008 + 0.0005}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Pin header housing -->
+  <link name="imu_pin_header">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.002 0.015 0.0025"/>
+      </geometry>
+      <material name="pin_header_black">
+        <color rgba="0.10 0.10 0.10 1"/>
+      </material>
     </visual>
     <inertial>
       <mass value="0.001"/>
-      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0"
+                               iyy="0.000001" iyz="0"
+                                              izz="0.000001"/>
     </inertial>
   </link>
 
-  <joint name="imu_header_joint" type="fixed">
+  <joint name="imu_pin_header_joint" type="fixed">
     <parent link="imu_link"/>
-    <child link="imu_header"/>
-    <origin xyz="0.009 0 0.003" rpy="0 0 0"/>
+    <child  link="imu_pin_header"/>
+    <origin xyz="0.010 0 ${0.0008 + 0.00125}" rpy="0 0 0"/>
   </joint>
 
-  <link name="imu_pins">
+  <!-- Gold pin pads -->
+  <link name="imu_pin_row">
     <visual>
-      <geometry><box size="0.001 0.010 0.006"/></geometry>
-      <material name="pin_silver"><color rgba="0.78 0.78 0.82 1"/></material>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.006 0.014 0.0005"/>
+      </geometry>
+      <material name="pin_gold">
+        <color rgba="0.75 0.70 0.25 1"/>
+      </material>
     </visual>
     <inertial>
-      <mass value="0.001"/>
-      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+      <mass value="0.0005"/>
+      <inertia ixx="0.0000001" ixy="0" ixz="0"
+                                iyy="0.0000001" iyz="0"
+                                               izz="0.0000001"/>
     </inertial>
   </link>
 
-  <joint name="imu_pins_joint" type="fixed">
+  <joint name="imu_pin_row_joint" type="fixed">
     <parent link="imu_link"/>
-    <child link="imu_pins"/>
-    <origin xyz="0.010 0 0.004" rpy="0 0 0"/>
+    <child  link="imu_pin_row"/>
+    <origin xyz="0.013 0 ${0.0008 + 0.00025}" rpy="0 0 0"/>
   </joint>
 
-  <link name="imu_cap">
-    <visual>
-      <geometry><cylinder radius="0.001" length="0.003"/></geometry>
-      <material name="cap_silver"><color rgba="0.82 0.82 0.85 1"/></material>
-    </visual>
-    <inertial>
-      <mass value="0.001"/>
-      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
-    </inertial>
-  </link>
 
-  <joint name="imu_cap_joint" type="fixed">
-    <parent link="imu_link"/>
-    <child link="imu_cap"/>
-    <origin xyz="-0.006 0.006 0.003" rpy="0 0 0"/>
-  </joint>
+  <!-- ════════════════════════════════════════════════════════
+       GAZEBO — material overrides
+       ════════════════════════════════════════════════════════ -->
 
-  <!-- ═══════════════ GAZEBO PROPERTIES ═══════════════ -->
-  <gazebo reference="chassis">      <material>Gazebo/Blue</material></gazebo>
+  <!-- Chassis & wheels -->
+  <gazebo reference="chassis">       <material>Gazebo/Blue</material></gazebo>
+  <gazebo reference="left_wheel_hub"><material>Gazebo/Gray</material></gazebo>
+  <gazebo reference="right_wheel_hub"><material>Gazebo/Gray</material></gazebo>
+
   <gazebo reference="left_wheel">
     <material>Gazebo/Black</material>
     <mu1>1.8</mu1><mu2>1.8</mu2><kp>500000</kp><kd>10</kd>
   </gazebo>
-  <gazebo reference="left_wheel_hub"> <material>Gazebo/Gray</material></gazebo>
   <gazebo reference="right_wheel">
     <material>Gazebo/Black</material>
     <mu1>1.8</mu1><mu2>1.8</mu2><kp>500000</kp><kd>10</kd>
   </gazebo>
-  <gazebo reference="right_wheel_hub"><material>Gazebo/Gray</material></gazebo>
+
+  <!-- Ball caster -->
+  <gazebo reference="caster_housing_top">       <material>Gazebo/White</material></gazebo>
+  <gazebo reference="caster_cup_body">          <material>Gazebo/White</material></gazebo>
+  <gazebo reference="caster_ear_left">          <material>Gazebo/White</material></gazebo>
+  <gazebo reference="caster_ear_right">         <material>Gazebo/White</material></gazebo>
+  <gazebo reference="caster_pivot_bolt_left">   <material>Gazebo/Black</material></gazebo>
+  <gazebo reference="caster_pivot_bolt_right">  <material>Gazebo/Black</material></gazebo>
+  <gazebo reference="caster_ball_shine">        <material>Gazebo/Gray</material></gazebo>
+
   <gazebo reference="caster_front">
-    <material>Gazebo/Gray</material>
+    <material>Gazebo/Black</material>
     <mu1>0.001</mu1><mu2>0.001</mu2>
   </gazebo>
 
-  <gazebo reference="battery">            <material>Gazebo/Black</material></gazebo>
-  <gazebo reference="battery_label">      <material>Gazebo/Yellow</material></gazebo>
-  <gazebo reference="battery_connector">  <material>Gazebo/Orange</material></gazebo>
-  <gazebo reference="battery_lead">       <material>Gazebo/White</material></gazebo>
+  <!-- Battery pack -->
+  <gazebo reference="battery_single">               <material>Gazebo/Black</material></gazebo>
+  <gazebo reference="battery_single_label">         <material>Gazebo/Yellow</material></gazebo>
+  <gazebo reference="battery_single_cell_div">      <material>Gazebo/DarkGray</material></gazebo>
+  <gazebo reference="battery_single_terminal_pos">  <material>Gazebo/Red</material></gazebo>
+  <gazebo reference="battery_single_terminal_neg">  <material>Gazebo/Black</material></gazebo>
+  <gazebo reference="battery_single_balance">       <material>Gazebo/White</material></gazebo>
 
+  <!-- IMU board components -->
+  <gazebo reference="imu_mpu_chip">  <material>Gazebo/Black</material></gazebo>
+  <gazebo reference="imu_cap_1">     <material>Gazebo/Gray</material></gazebo>
+  <gazebo reference="imu_cap_2">     <material>Gazebo/Gray</material></gazebo>
+  <gazebo reference="imu_vreg">      <material>Gazebo/Black</material></gazebo>
+  <gazebo reference="imu_pin_header"><material>Gazebo/Black</material></gazebo>
+  <gazebo reference="imu_pin_row">   <material>Gazebo/Gold</material></gazebo>
+
+  <!-- IMU sensor definition -->
   <gazebo reference="imu_link">
     <material>Gazebo/Green</material>
     <sensor name="imu_sensor" type="imu">
@@ -399,29 +875,39 @@
     </sensor>
   </gazebo>
 
-  <!-- ═══════════════ GAZEBO PLUGINS ═══════════════ -->
+
+  <!-- ════════════════════════════════════════════════════════
+       GAZEBO — simulation plugins
+       ════════════════════════════════════════════════════════ -->
+
   <gazebo>
-    <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+
+    <!-- Differential drive controller -->
+    <plugin filename="gz-sim-diff-drive-system"
+            name="gz::sim::systems::DiffDrive">
       <left_joint>left_wheel_joint</left_joint>
       <right_joint>right_wheel_joint</right_joint>
       <wheel_separation>${wheel_separation}</wheel_separation>
       <wheel_radius>${wheel_radius}</wheel_radius>
       <topic>cmd_vel</topic>
-      
       <odom_topic>/model/differential_drive_robot/odometry</odom_topic>
       <tf_topic>/model/differential_drive_robot/tf</tf_topic>
-      
       <frame_id>odom</frame_id>
       <child_frame_id>base_link</child_frame_id>
       <odom_publish_frequency>50</odom_publish_frequency>
       <max_wheel_acceleration>2.0</max_wheel_acceleration>
     </plugin>
 
-    <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+    <!-- Joint state publisher -->
+    <plugin filename="gz-sim-joint-state-publisher-system"
+            name="gz::sim::systems::JointStatePublisher">
       <topic>/world/car_world/model/differential_drive_robot/joint_state</topic>
     </plugin>
 
-    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/>
+    <!-- IMU system plugin -->
+    <plugin filename="gz-sim-imu-system"
+            name="gz::sim::systems::Imu"/>
+
   </gazebo>
 
 </robot>
