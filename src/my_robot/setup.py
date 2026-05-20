@@ -19,7 +19,7 @@ setup(
     zip_safe=True,
     maintainer='rei',
     maintainer_email='rei@todo.todo',
-    description='Robot Differential Drive Profesional',
+    description='differential drive robot',
     license='Apache License 2.0',
     tests_require=['pytest'],
     entry_points={
