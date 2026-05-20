@@ -12,7 +12,9 @@ def generate_launch_description():
 
     pkg_path = get_package_share_directory(package_name)
     xacro_file = os.path.join(pkg_path, 'model', 'robot.xacro')
+    
     bridge_yaml = os.path.join(pkg_path, 'config', 'gz_bridge.yaml')
+    rviz_config = os.path.join(pkg_path, 'config', 'robot.rviz')
 
     # Xacro
     robot_description_xml = xacro.process_file(xacro_file).toxml()
@@ -51,9 +53,20 @@ def generate_launch_description():
         output='screen'
     )
 
+    # RViz
+    rviz = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        arguments=['-d', rviz_config] if os.path.exists(rviz_config) else [],
+        parameters=[{'use_sim_time': True}],
+        output='screen'
+    )
+
     return LaunchDescription([
         gazebo_launch,
         node_spawn_robot,
         node_robot_state_publisher,
-        node_bridge
+        node_bridge,
+        rviz
     ])
